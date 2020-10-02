@@ -111,12 +111,52 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+
+    path = util.Queue()
+    visitedNodes = []
+
+    path.push((startState, []))
+
+    while not (path.isEmpty()):
+        currentNode, actions = path.pop()
+        if currentNode not in visitedNodes:
+            visitedNodes.append(currentNode)
+
+            if problem.isGoalState(currentNode):
+                return actions
+
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                newAction = actions + [action]
+                path.push((nextNode, newAction))
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+
+    path = util.PriorityQueue()
+    visitedNodes = []
+
+    path.push((startState, [], 0), 0)
+
+    while not (path.isEmpty()):
+        currentNode, actions, prevCost = path.pop()
+        if currentNode not in visitedNodes:
+            visitedNodes.append(currentNode)
+
+            if problem.isGoalState(currentNode):
+                return actions
+
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                newAction = actions + [action]
+                nextCost = prevCost + cost
+                path.push((nextNode, newAction, nextCost), nextCost)    
 
 def nullHeuristic(state, problem=None):
     """
@@ -128,7 +168,28 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startState = problem.getStartState()
+    if problem.isGoalState(startState):
+        return []
+
+    path = util.PriorityQueue()
+    visitedNodes = []
+
+    path.push((startState, [], 0), 0)
+
+    while not path.isEmpty():
+        currentNode, actions, prevCost = path.pop()
+
+        if currentNode not in visitedNodes:
+            visitedNodes.append(currentNode)
+
+            if problem.isGoalState(currentNode):
+                return actions
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                newActions = actions + [action]
+                newCost = prevCost + cost
+                heuristicCost = newCost + heuristic(nextNode, problem)
+                path.push((nextNode, newActions, newCost), heuristicCost)
 
 
 # Abbreviations

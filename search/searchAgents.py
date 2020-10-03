@@ -335,11 +335,11 @@ class CornersProblem(search.SearchProblem):
 
             "*** YOUR CODE HERE ***"
             x,y = state[0]
+            visitedCorner = list(state[1])
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
-                visitedCorner = list(state[1])
                 if (nextState in self.corners) and (not nextState in visitedCorner):
                     visitedCorner.append(nextState)
                 successors.append(((nextState, visitedCorner), action, 1))
@@ -377,24 +377,20 @@ def cornersHeuristic(state, problem):
     walls = problem.walls 
 
     "*** YOUR CODE HERE ***"
+    if problem.isGoalState(state):
+        return 0
+
     notVistedCorners = []
+    currentNode = state[0]
     visitedCorners = state[1]
     
     for corner in corners:
         if corner not in visitedCorners:
             notVistedCorners.append(corner)
+            
+    cost = max([util.manhattanDistance(currentNode, corner) for corner in notVistedCorners])
 
-    totalCost = 0
-    currentNode = state[0]
-
-    while len(notVistedCorners) > 0:
-        cost, corner = \
-            min([(util.manhattanDistance(currentNode, corner), corner) for corner in notVistedCorners])
-  
-        notVistedCorners.remove(corner)
-        currentNode = corner
-        totalCost += cost
-    return totalCost
+    return cost
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -490,17 +486,8 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     if problem.isGoalState(state):
         return 0
-    currentNode = position
-    foodList = foodGrid.asList()
-    problem.heuristicInfo['wallCount'] = problem.walls.count()
-    totalCost = 0
-    listCost = []
-    #while len(foodList) > 0:
-    cost, food = \
-        max([(mazeDistance(currentNode, food, problem.startingGameState), food) for food in foodList])
-    foodList.remove(food)
-    currentNode = food
-    totalCost += cost
+    
+    cost = max([mazeDistance(position, food, problem.startingGameState) for food in foodGrid.asList()])
     return cost
 
 class ClosestDotSearchAgent(SearchAgent):

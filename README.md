@@ -62,4 +62,4 @@
   + Nếu state hiện tại là đích thì trả về foodHeuristic = 0
   + Trả về foodHeuristic bằng khoảng cách maze từ node hiện tại đến food xa nhất
   
-- Q8: Suboptimal Search
+- Q8: Suboptimal Search. Sử dụng BreadthFirstSearch.
